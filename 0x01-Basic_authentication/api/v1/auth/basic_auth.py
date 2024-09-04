@@ -6,6 +6,7 @@ from typing import List, TypeVar
 from flask import request
 from models.user import User
 import base64
+import urllib.parse
 
 
 class BasicAuth(Auth):
@@ -44,7 +45,8 @@ class BasicAuth(Auth):
         if ':' not in decoded_base64_authorization_header:
             return (None, None)
         user_credentials = decoded_base64_authorization_header.split(':', 1)
-        return (user_credentials[0], user_credentials[1])
+        user_credentials_pass = urllib.parse.quote_plus(user_credentials[1])
+        return (user_credentials[0], user_credentials_pass)
 
     def user_object_from_credentials(self, user_email: str, user_pwd: str
                                      ) -> TypeVar('User'):
