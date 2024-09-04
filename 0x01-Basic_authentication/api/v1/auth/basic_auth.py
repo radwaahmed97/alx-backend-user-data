@@ -2,11 +2,11 @@
 """basic_authentication module"""
 
 from api.v1.auth.auth import Auth
-from typing import List, TypeVar
+from typing import TypeVar, Tuple, Optional
 from flask import request
 from models.user import User
 import base64
-import urllib.parse
+import re
 
 
 class BasicAuth(Auth):
@@ -36,17 +36,24 @@ class BasicAuth(Auth):
         except Exception:
             return None
 
-    def extract_user_credentials(self, decoded_base64_authorization_header:
-                                 str) -> (str, str):
-        """Extract user credentials"""
-        if decoded_base64_authorization_header is None or\
-           type(decoded_base64_authorization_header) is not str:
-            return (None, None)
-        if ':' not in decoded_base64_authorization_header:
-            return (None, None)
-        user_credentials = decoded_base64_authorization_header.split(':', 1)
-        user_credentials_pass = urllib.parse.quote_plus(user_credentials[1])
-        return (user_credentials[0], user_credentials_pass)
+    def extract_user_credentials(
+            self,
+            decoded_base64_authorization_header: str,
+            ) -> Tuple[str, str]:
+        """Extracts user credentials from a base64-decoded authorization
+        header that uses the Basic authentication flow.
+        """
+        if isinstance(decoded_base64_authorization_header, str):
+            patt = r'(?P<user>[^:]+):(?P<password>.+)'
+            f_match = re.fullmatch(
+                patt,
+                decoded_base64_authorization_header.strip(),
+            )
+            if f_match is not None:
+                user_name = f_match.group('user')
+                pword = f_match.group('password')
+                return user_name, pword
+        return None, None
 
     def user_object_from_credentials(self, user_email: str, user_pwd: str
                                      ) -> TypeVar('User'):
