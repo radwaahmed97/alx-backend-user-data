@@ -35,7 +35,9 @@ class SessionAuth(Auth):
         """deletes the user session / logout"""
         if request:
             cookiebased = self.session_cookie(request)
-            if not cookiebased or not self.user_id_by_session_id(cookiebased):
+            if not cookiebased:
+                return False
+            if not self.user_id_by_session_id(cookiebased):
                 return False
             self.user_id_by_session_id.pop(cookiebased)
             return True
