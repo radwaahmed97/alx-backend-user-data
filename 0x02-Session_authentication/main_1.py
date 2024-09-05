@@ -25,4 +25,4 @@ print("{} => {}: {}".format(user_id, session, sa.user_id_by_session_id))
 
 user_id = "abcde"
 session = sa.create_session(user_id)
-print("{} => {}: {}".format(user_id, session, sa.user_id_by_session_id))
+print("{} => {}: {}".format(user_id, session, sa.user_id_by_session_id)
