@@ -19,11 +19,10 @@ class SessionExpAuth(SessionAuth):
     def create_session(self, user_id=None):
         """create a session"""
         session_id = super().create_session(user_id)
-        if not session_id:
-            return None
-        session_dict = {'user_id': user_id, 'created_at': datetime.now()}
-        SessionAuth.user_id_by_session_id[session_id] = session_dict
-        return session_id
+        if session_id:
+            session_dict = {'user_id': user_id, 'created_at': datetime.now()}
+            SessionAuth.user_id_by_session_id[session_id] = session_dict
+            return session_id
 
     def user_id_for_session_id(self, session_id=None):
         """return a User ID based on a Session ID"""
@@ -32,15 +31,11 @@ class SessionExpAuth(SessionAuth):
         session_dict = SessionAuth.user_id_by_session_id.get(session_id)
         if not session_dict:
             return None
-        user_id = session_dict.get('user_id')
-        if not user_id:
-            return None
         if self.session_duration <= 0:
-            return user_id
-        created_at = session_dict.get('created_at')
-        if not created_at:
+            return session_dict.get('user_id')
+        if 'created_at' not in session_dict:
             return None
-        if (created_at + timedelta(seconds=self.session_duration) <
-                datetime.now()):
+        delta_time = timedelta(seconds=self.session_duration)
+        if session_dict['created_at'] + delta_time < datetime.now():
             return None
-        return user_id
+        return session_dict.get('user_id')
