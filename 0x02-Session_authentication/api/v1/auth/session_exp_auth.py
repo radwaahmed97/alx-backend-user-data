@@ -8,11 +8,11 @@ from datetime import datetime, timedelta
 
 
 class SessionExpAuth(SessionAuth):
-    """SessionExpAuth class to manage API authentication
+    """SessionExpAuth class to manage API authentication expirations
     """
 
     def __init__(self):
-        """Initialize SessionExpAuth
+        """Init SessionExpAuth class
         """
         try:
             self.session_duration = int(getenv('SESSION_DURATION'))
