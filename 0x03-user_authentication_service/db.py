@@ -5,8 +5,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.session import Session
-from user import User
-from user import Base
+from sqlalchemy.orm.exc import NoResultFound
+from user import User, Base
 
 
 class DB:
@@ -37,3 +37,10 @@ class DB:
             self._session.rollback()
             new_user = None
         return new_user
+
+    def find_user_by(self, **kwargs) -> User:
+        """find a user by a given attribute"""
+        try:
+            return self._session.query(User).filter_by(**kwargs).first()
+        except Exception:
+            raise NoResultFound
