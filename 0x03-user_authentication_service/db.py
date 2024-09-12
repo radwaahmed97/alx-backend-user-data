@@ -47,12 +47,12 @@ class DB:
             raise NoResultFound("Not found")
         return searched_user
 
-    def update_user(self, user_id: int, **kwargs) -> User:
+    def update_user(self, user_id: int, **kwargs) -> None:
         """updates user after getting it using find_user_by"""
-        user = self.find_user_by(id=user_id)
-        for (key, value) in kwargs.items():
+        updated_user = self.find_user_by(id=user_id)
+        for (key, val) in kwargs.items():
             if key not in user_keys:
                 raise ValueError
-            setattr(user, key, value)
+            setattr(updated_user, key, val)
         self._session.commit()
         return None
