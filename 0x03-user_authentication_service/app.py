@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """basic flask application"""
 
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, abort
 from auth import Auth
 
 
@@ -24,7 +24,21 @@ def users() -> str:
         AUTH.register_user(email, password)
         return jsonify({"email": email, "message": "user created"})
     except ValueError:
-        return jsonify({"message": "User already exists"}), 404
+        return jsonify({"message": "User already exists"}), 400
+
+
+@app.route('/sessions', methods=['POST'], strict_slashes=False)
+def login() -> str:
+    """implements the POST /sessions route"""
+    email = request.form.get('email')
+    password = request.form.get('password')
+    if AUTH.valid_login(email, password):
+        session_ID = AUTH.create_session(email)
+        response = jsonify({"email": email, "message": "logged in"})
+        response.set_cookie("session_id", session_ID)
+        return response
+    else:
+        abort(401)
 
 
 if __name__ == "__main__":
