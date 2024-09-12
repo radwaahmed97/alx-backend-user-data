@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 """basic flask application"""
 
-from flask import Flask, jsonify, request, abort, make_response
-
-app = Flask(__name__='app')
+from flask import Flask, jsonify
 
 
-@app.route('/', methods=['GET'])
+app = Flask(__name__)
+
+
+@app.route('/', methods=['GET'], strict_slashes=False)
 def Home():
     """return a JSON payload of the form"""
     return jsonify({"message": "Bienvenue"})
