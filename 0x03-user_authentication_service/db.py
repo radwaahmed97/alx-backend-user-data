@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 """DB module
 """
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, tuple_
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.session import Session
 from sqlalchemy.orm.exc import NoResultFound
+from sqlalchemy.exc import InvalidRequestError
 from user import User, Base
 
 user_keys = ['id', 'email', 'hashed_password', 'session_id', 'reset_token']
@@ -42,10 +43,20 @@ class DB:
 
     def find_user_by(self, **kwargs) -> User:
         """find a user by a given attribute"""
-        searched_user = self.__session.query(User).filter_by(**kwargs).first()
-        if searched_user is None:
+        User_keys = []
+        User_values = []
+        for key, val in kwargs.items():
+            if hasattr(User, key):
+                User_keys.append(getattr(User, key))
+                User_values.append(val)
+            else:
+                raise InvalidRequestError()
+        returned_item = self._session.query(User).filter(
+            tuple_(*User_keys).in_([tuple(User_values)])
+        ).first()
+        if returned_item is None:
             raise NoResultFound("Not found")
-        return searched_user
+        return returned_item
 
     def update_user(self, user_id: int, **kwargs) -> None:
         """updates user after getting it using find_user_by"""
