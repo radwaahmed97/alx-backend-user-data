@@ -77,10 +77,10 @@ def reset_password() -> str:
 def update_password() -> str:
     """updates the password route"""
     reset_token = request.form.get('reset_token')
-    password = request.form.get('password')
+    new_password = request.form.get('new_password')
     email = request.form.get('email')
     try:
-        AUTH.update_password(reset_token, password)
+        AUTH.update_password(reset_token, new_password)
         return jsonify({"email": email,
                         "message": "Password updated"}), 200
     except Exception:
