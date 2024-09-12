@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """basic flask application"""
 
-from flask import Flask, jsonify, request, abort
+from flask import Flask, jsonify, request, abort, redirect
 from auth import Auth
 
 
@@ -39,6 +39,17 @@ def login() -> str:
         return response
     else:
         abort(401)
+
+
+@app.route('/sessions', methods=['DELETE'], strict_slashes=False)
+def logout() -> str:
+    """implements the DELETE /sessions route"""
+    session_ID = request.cookies.get('session_id')
+    user = AUTH.get_user_from_session_id(session_ID)
+    if user:
+        AUTH.destroy_session(user.id)
+        return redirect('/')
+    abort(403)
 
 
 if __name__ == "__main__":
