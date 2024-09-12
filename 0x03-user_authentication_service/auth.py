@@ -76,7 +76,7 @@ class Auth:
         except Exception:
             pass
 
-    def reset_password(self, email: str) -> str:
+    def get_reset_password_token(self, email: str) -> str:
         """reset the password"""
         user = None
         try:
