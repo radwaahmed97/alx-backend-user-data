@@ -8,6 +8,8 @@ from sqlalchemy.orm.session import Session
 from sqlalchemy.orm.exc import NoResultFound
 from user import User, Base
 
+user_keys = ['id', 'email', 'hashed_password', 'session_id', 'reset_token']
+
 
 class DB:
     """DB class"""
@@ -48,10 +50,9 @@ class DB:
     def update_user(self, user_id: int, **kwargs) -> User:
         """updates user after getting it using find_user_by"""
         user = self.find_user_by(id=user_id)
-        if user is not None:
-            for key, value in kwargs.items():
-                setattr(user, key, value)
-            self._session.commit()
-        else:
-            raise ValueError
-        return user
+        for (key, value) in kwargs.items():
+            if key not in user_keys:
+                raise ValueError
+            setattr(user, key, value)
+        self._session.commit()
+        return None
