@@ -53,5 +53,5 @@ class DB:
                 setattr(user, key, value)
             self._session.commit()
         else:
-            raise NoResultFound("Not found")
+            raise ValueError
         return user
